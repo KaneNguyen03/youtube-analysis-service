@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Analysis Service - Speedforce.ai</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .form-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #e3e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-section {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-processing { background: #ffa726; }
+        .status-completed { background: #66bb6a; }
+        .status-failed { background: #ef5350; }
+
+        .results-section {
+            background: #f5f7fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .screenshot-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .transcript-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .transcript-meta {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .ai-probability {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .ai-low { background: #e8f5e8; color: #2e7d32; }
+        .ai-medium { background: #fff3e0; color: #ef6c00; }
+        .ai-high { background: #ffebee; color: #c62828; }
+
+        .json-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none; }
+
+        .examples {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+        }
+
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #4facfe;
+        }
+
+        .example-url {
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+            margin: 5px 0;
+            display: block;
+        }
+
+        .example-url:hover {
+            color: #4facfe;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e0e6ed;
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .main-content { padding: 20px; }
+            .form-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 YouTube Analysis Service</h1>
+            <p>AI-powered video analysis with screenshot capture, audio transcription, and content detection</p>
+        </div>
+
+        <div class="main-content">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h3>Screenshot Capture</h3>
+                    <p>Puppeteer captures high-quality thumbnails</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3>Audio Extraction</h3>
+                    <p>ytdl-core + FFmpeg processing</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗣️</div>
+                    <h3>Transcription</h3>
+                    <p>ElevenLabs with timestamps</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Detection</h3>
+                    <p>GPTZero analysis per sentence</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="analysisForm">
+                    <div class="form-group">
+                        <label for="youtubeUrl">YouTube URL:</label>
+                        <input 
+                            type="url" 
+                            id="youtubeUrl" 
+                            class="url-input"
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="analyze-btn" id="submitBtn">
+                        🔍 Analyze Video
+                    </button>
+                </form>
+
+                <div class="examples">
+                    <h3>📝 Example URLs (click to use):</h3>
+                    <span class="example-url" onclick="setUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')">
+                        Rick Astley - Never Gonna Give You Up
+                    </span>
+                    <span class="example-url" onclick="setUrl('https://www.youtube.com/watch?v=9bZkp7q19f0')">
+                        PSY - Gangnam Style
+                    </span>
+                    <span class="example-url" onclick="setUrl('https://www.youtube.com/watch?v=kJQP7kiw5Fk')">
+                        Luis Fonsi - Despacito
+                    </span>
+                </div>
+            </div>
+
+            <div id="statusSection" class="status-section hidden">
+                <div class="status-header">
+                    <div id="statusIndicator" class="status-indicator"></div>
+                    <h3 id="statusText">Processing...</h3>
+                    <div id="loadingSpinner" class="loading-spinner"></div>
+                </div>
+                <p id="statusMessage">Starting analysis...</p>
+                <p><strong>Job ID:</strong> <span id="jobId"></span></p>
+            </div>
+
+            <div id="resultsSection" class="results-section hidden">
+                <h2>📊 Analysis Results</h2>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentJobId = null;
+        let pollInterval = null;
+
+        function setUrl(url) {
+            document.getElementById('youtubeUrl').value = url;
+        }
+
+        document.getElementById('analysisForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const url = document.getElementById('youtubeUrl').value.trim();
+            if (!url) return;
+
+            try {
+                showStatus('processing', 'Submitting analysis request...');
+                
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentJobId = result.jobId;
+                    document.getElementById('jobId').textContent = currentJobId;
+                    document.getElementById('statusMessage').textContent = result.message;
+                    
+                    // Start polling for results
+                    startPolling();
+                } else {
+                    showStatus('failed', 'Analysis failed: ' + result.error);
+                }
+            } catch (error) {
+                showStatus('failed', 'Error: ' + error.message);
+            }
+        });
+
+        function showStatus(status, message) {
+            const statusSection = document.getElementById('statusSection');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const submitBtn = document.getElementById('submitBtn');
+
+            statusSection.classList.remove('hidden');
+            statusIndicator.className = `status-indicator status-${status}`;
+            
+            switch(status) {
+                case 'processing':
+                    statusText.textContent = 'Processing...';
+                    loadingSpinner.style.display = 'inline-block';
+                    submitBtn.disabled = true;
+                    break;
+                case 'completed':
+                    statusText.textContent = 'Analysis Complete!';
+                    loadingSpinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    break;
+                case 'failed':
+                    statusText.textContent = 'Analysis Failed';
+                    loadingSpinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    break;
+            }
+            
+            statusMessage.textContent = message;
+        }
+
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/result/${currentJobId}`);
+                    const job = await response.json();
+                    
+                    if (job.status === 'completed') {
+                        clearInterval(pollInterval);
+                        showStatus('completed', 'Analysis completed successfully!');
+                        displayResults(job.result);
+                    } else if (job.status === 'failed') {
+                        clearInterval(pollInterval);
+                        showStatus('failed', job.error || 'Analysis failed');
+                    } else {
+                        document.getElementById('statusMessage').textContent = job.progress || 'Processing...';
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            }, 2000); // Poll every 2 seconds
+        }
+
+        function displayResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '';
+            
+            // Basic info
+            html += `<div style="margin-bottom: 25px;">`;
+            html += `<h3>📺 Video: ${result.title || 'Unknown Title'}</h3>`;
+            html += `<p><strong>URL:</strong> <a href="${result.video_url}" target="_blank">${result.video_url}</a></p>`;
+            html += `<p><strong>Processing Time:</strong> ${result.processing_summary?.total_duration_ms || 0}ms</p>`;
+            html += `</div>`;
+            
+            // Screenshot
+            if (result.screenshot_path) {
+                html += `<div style="margin-bottom: 25px;">`;
+                html += `<h3>📸 Screenshot</h3>`;
+                html += `<img src="${result.screenshot_path}" alt="Video Screenshot" class="screenshot-preview">`;
+                html += `</div>`;
+            }
+            
+            // Transcript
+            if (result.transcript && result.transcript.length > 0) {
+                html += `<div style="margin-bottom: 25px;">`;
+                html += `<h3>🗣️ Transcript (${result.transcript.length} sentences)</h3>`;
+                
+                result.transcript.forEach((item, index) => {
+                    const aiProb = item.ai_probability || 0;
+                    const aiClass = aiProb < 0.3 ? 'ai-low' : aiProb < 0.7 ? 'ai-medium' : 'ai-high';
+                    const timeStr = item.start_time ? `${item.start_time.toFixed(1)}s - ${item.end_time.toFixed(1)}s` : 'N/A';
+                    
+                    html += `<div class="transcript-item">`;
+                    html += `<div class="transcript-meta">`;
+                    html += `<span>🕐 ${timeStr} | 👤 ${item.speaker || 'Speaker_1'}</span>`;
+                    html += `<span class="ai-probability ${aiClass}">AI: ${(aiProb * 100).toFixed(1)}%</span>`;
+                    html += `</div>`;
+                    html += `<p>"${item.text || item.sentence}"</p>`;
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Summary stats
+            if (result.processing_summary) {
+                const summary = result.processing_summary;
+                html += `<div style="margin-bottom: 25px; background: white; padding: 20px; border-radius: 8px;">`;
+                html += `<h3>📈 Summary Statistics</h3>`;
+                html += `<p><strong>Total Sentences:</strong> ${summary.total_sentences || 0}</p>`;
+                html += `<p><strong>Average AI Probability:</strong> ${((summary.avg_ai_probability || 0) * 100).toFixed(1)}%</p>`;
+                html += `<p><strong>Processing Time:</strong> ${(summary.total_duration_ms / 1000).toFixed(2)}s</p>`;
+                html += `</div>`;
+            }
+            
+            // Raw JSON
+            html += `<div style="margin-top: 25px;">`;
+            html += `<h3>📄 Raw JSON Response</h3>`;
+            html += `<pre class="json-output">${JSON.stringify(result, null, 2)}</pre>`;
+            html += `</div>`;
+            
+            resultsContent.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

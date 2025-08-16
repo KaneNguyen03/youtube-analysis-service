@@ -1,0 +1,124 @@
+{
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "completed",
+  "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "timestamp": "2025-08-16T10:30:00Z",
+  "processing_steps": [
+    {
+      "step": "screenshot",
+      "status": "completed",
+      "duration_ms": 3250,
+      "details": {
+        "title": "Rick Astley - Never Gonna Give You Up (Official Video)",
+        "path": "/screenshots/550e8400-e29b-41d4-a716-446655440000.png"
+      }
+    },
+    {
+      "step": "audio_extraction",
+      "status": "completed", 
+      "duration_ms": 5100,
+      "details": {
+        "format": "wav",
+        "sample_rate": "16kHz",
+        "channels": "mono",
+        "bit_depth": "16-bit",
+        "size_mb": 4.2
+      }
+    },
+    {
+      "step": "transcription",
+      "status": "completed",
+      "service": "ElevenLabs_Mock",
+      "details": {
+        "sentences_count": 7,
+        "has_timestamps": true,
+        "has_speaker_diarization": true
+      }
+    },
+    {
+      "step": "ai_detection",
+      "status": "completed",
+      "duration_ms": 2100,
+      "details": {
+        "sentences_analyzed": 7,
+        "avg_ai_probability": 0.34
+      }
+    }
+  ],
+  "screenshot_path": "/screenshots/550e8400-e29b-41d4-a716-446655440000.png",
+  "title": "Rick Astley - Never Gonna Give You Up (Official Video)",
+  "audio_path": "/app/audio/550e8400-e29b-41d4-a716-446655440000.wav",
+  "duration": 213,
+  "transcript": [
+    {
+      "text": "Hey everyone, welcome back to the channel!",
+      "start_time": 0.5,
+      "end_time": 2.8,
+      "speaker": "Speaker_1",
+      "confidence": 0.98,
+      "ai_probability": 0.23,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "Today we're going to dive deep into artificial intelligence and machine learning.",
+      "start_time": 3.2,
+      "end_time": 7.1,
+      "speaker": "Speaker_1",
+      "confidence": 0.95,
+      "ai_probability": 0.78,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "This technology is revolutionizing how we process and understand data.",
+      "start_time": 7.5,
+      "end_time": 11.8,
+      "speaker": "Speaker_1",
+      "confidence": 0.97,
+      "ai_probability": 0.72,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "Machine learning algorithms can identify patterns that humans might miss.",
+      "start_time": 12.2,
+      "end_time": 16.5,
+      "speaker": "Speaker_1",
+      "confidence": 0.94,
+      "ai_probability": 0.45,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "The applications are endless, from healthcare to autonomous vehicles.",
+      "start_time": 17.0,
+      "end_time": 21.3,
+      "speaker": "Speaker_1",
+      "confidence": 0.96,
+      "ai_probability": 0.31,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "But we also need to consider the ethical implications of AI development.",
+      "start_time": 21.8,
+      "end_time": 25.9,
+      "speaker": "Speaker_1",
+      "confidence": 0.93,
+      "ai_probability": 0.29,
+      "ai_source": "local_fallback"
+    },
+    {
+      "text": "Thanks for watching, and don't forget to subscribe for more content!",
+      "start_time": 26.4,
+      "end_time": 30.2,
+      "speaker": "Speaker_1",
+      "confidence": 0.98,
+      "ai_probability": 0.18,
+      "ai_source": "local_fallback"
+    }
+  ],
+  "processing_summary": {
+    "total_duration_ms": 10450,
+    "total_sentences": 7,
+    "avg_ai_probability": 0.42,
+    "status": "completed",
+    "completed_at": "2025-08-16T10:30:10Z"
+  }
+}
